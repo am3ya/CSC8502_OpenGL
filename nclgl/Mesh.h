@@ -57,6 +57,9 @@ public:
 	//For first triangle
 	static Mesh* GenerateTriangle();
 
+	//For transparency and depth tut4
+	static Mesh* GenerateQuad();
+
 	unsigned int GetTriCount() const {
 		int primCount = indices ? numIndices : numVertices;
 		return primCount / 3;
