@@ -1,6 +1,7 @@
 C:\Users\c4011955\CSC8502_OpenGL\Third Party\glad\glad.c;C:\Users\c4011955\CSC8502_OpenGL\nclgl\x64\Debug\glad.obj
 C:\Users\c4011955\CSC8502_OpenGL\nclgl\Camera.cpp;C:\Users\c4011955\CSC8502_OpenGL\nclgl\x64\Debug\Camera.obj
 C:\Users\c4011955\CSC8502_OpenGL\nclgl\ComputeShader.cpp;C:\Users\c4011955\CSC8502_OpenGL\nclgl\x64\Debug\ComputeShader.obj
+C:\Users\c4011955\CSC8502_OpenGL\nclgl\CubeRobot.cpp;C:\Users\c4011955\CSC8502_OpenGL\nclgl\x64\Debug\CubeRobot.obj
 C:\Users\c4011955\CSC8502_OpenGL\nclgl\GameTimer.cpp;C:\Users\c4011955\CSC8502_OpenGL\nclgl\x64\Debug\GameTimer.obj
 C:\Users\c4011955\CSC8502_OpenGL\nclgl\Keyboard.cpp;C:\Users\c4011955\CSC8502_OpenGL\nclgl\x64\Debug\Keyboard.obj
 C:\Users\c4011955\CSC8502_OpenGL\nclgl\Matrix2.cpp;C:\Users\c4011955\CSC8502_OpenGL\nclgl\x64\Debug\Matrix2.obj
@@ -12,5 +13,6 @@ C:\Users\c4011955\CSC8502_OpenGL\nclgl\MeshMaterial.cpp;C:\Users\c4011955\CSC850
 C:\Users\c4011955\CSC8502_OpenGL\nclgl\Mouse.cpp;C:\Users\c4011955\CSC8502_OpenGL\nclgl\x64\Debug\Mouse.obj
 C:\Users\c4011955\CSC8502_OpenGL\nclgl\OGLRenderer.cpp;C:\Users\c4011955\CSC8502_OpenGL\nclgl\x64\Debug\OGLRenderer.obj
 C:\Users\c4011955\CSC8502_OpenGL\nclgl\Quaternion.cpp;C:\Users\c4011955\CSC8502_OpenGL\nclgl\x64\Debug\Quaternion.obj
+C:\Users\c4011955\CSC8502_OpenGL\nclgl\SceneNode.cpp;C:\Users\c4011955\CSC8502_OpenGL\nclgl\x64\Debug\SceneNode.obj
 C:\Users\c4011955\CSC8502_OpenGL\nclgl\Shader.cpp;C:\Users\c4011955\CSC8502_OpenGL\nclgl\x64\Debug\Shader.obj
 C:\Users\c4011955\CSC8502_OpenGL\nclgl\Window.cpp;C:\Users\c4011955\CSC8502_OpenGL\nclgl\x64\Debug\Window.obj
