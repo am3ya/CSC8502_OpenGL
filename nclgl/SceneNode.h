@@ -23,6 +23,19 @@ public:
 	Mesh* getMesh() const { return mesh; }
 	void setMesh(Mesh* m) { mesh = m; }
 
+	float getBoundingRadius() const { return boundingRadius; }
+	void setBoundingRadius(float f) { boundingRadius = f; }
+
+	float getCameraDistance() const { return distanceFromCamera; }
+	void setCameraDistance(float f) { distanceFromCamera = f; }
+
+	void setTexture(GLuint tex) { texture = tex; }
+	GLuint getTexture() const { return texture; }
+
+	static bool compareByCameraDistance(SceneNode* a, SceneNode* b) {
+		return (a->distanceFromCamera < b->distanceFromCamera) ? true : false;
+	}
+
 	void addChild(SceneNode* s);
 
 	virtual void update(float dt);
@@ -43,5 +56,8 @@ protected:
 	Matrix4 transform;
 	Vector3 modelScale;
 	Vector4 colour;
+	float distanceFromCamera;
+	float boundingRadius;
+	GLuint texture;
 	std::vector<SceneNode*> children;
 };
