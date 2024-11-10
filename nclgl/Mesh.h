@@ -60,6 +60,10 @@ public:
 	//For transparency and depth tut4
 	static Mesh* GenerateQuad();
 
+	//For tutorial 11 real time lighting
+	void GenerateNormals();
+	bool GetVertexIndicesForTri(unsigned int i, unsigned int& a, unsigned int& b, unsigned int& c) const;
+
 	unsigned int GetTriCount() const {
 		int primCount = indices ? numIndices : numVertices;
 		return primCount / 3;

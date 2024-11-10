@@ -35,6 +35,7 @@ _-_-_-_-_-_-_-""  ""
 #include "Window.h"
 #include "Shader.h"
 #include "Mesh.h"
+#include "Light.h"
 
 using std::vector;
 
@@ -62,6 +63,7 @@ protected:
 	void			UpdateShaderMatrices();
 	void			BindShader(Shader*s);
 	void setTextureRepeating(GLuint target, bool state); //Tutorial 3: Texture mapping
+	void SetShaderLighting(const Light& l); //Tutorial 11 real time lighting
 
 	void StartDebugGroup(const std::string& s) {
 		glPushDebugGroup(GL_DEBUG_SOURCE_APPLICATION, 0, (GLsizei)s.length(), s.c_str());

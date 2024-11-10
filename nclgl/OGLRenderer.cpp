@@ -225,6 +225,15 @@ void OGLRenderer::setTextureRepeating(GLuint target, bool repeating) {
 	glBindTexture(GL_TEXTURE_2D, 0);
 }
 
+//Tutorial 11 real time lighting
+void OGLRenderer::SetShaderLighting(const Light& l) {
+	glUniform3fv(glGetUniformLocation(currentShader->GetProgram(), "lightPos"), 1, (float*)&l.GetPosition());
+
+	glUniform4fv(glGetUniformLocation(currentShader->GetProgram(), "lightColour"), 1, (float*)&l.GetColour());
+
+	glUniform1f(glGetUniformLocation(currentShader->GetProgram(), "lightRadius"), l.GetRadius());
+}
+
 #ifdef OPENGL_DEBUGGING
 void OGLRenderer::DebugCallback(GLenum source, GLenum type, GLuint id, GLenum severity, GLsizei length, const GLchar* message, const void* userParam)	{
 		string sourceName;
