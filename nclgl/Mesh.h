@@ -96,6 +96,10 @@ public:
 protected:
 	void	BufferData();
 
+	//For tutorial 12 Real time lighting part B
+	void GenerateTangents();
+	Vector4 GenerateTangent(int a, int b, int c);
+
 	GLuint	arrayObject;
 
 	GLuint	bufferObject[MAX_BUFFER];
