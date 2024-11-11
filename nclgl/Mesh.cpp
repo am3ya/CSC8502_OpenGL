@@ -3,28 +3,28 @@
 
 using std::string;
 
-Mesh::Mesh(void)	{
+Mesh::Mesh(void) {
 	glGenVertexArrays(1, &arrayObject);
-	
-	for(int i = 0; i < MAX_BUFFER; ++i) {
+
+	for (int i = 0; i < MAX_BUFFER; ++i) {
 		bufferObject[i] = 0;
 	}
 
-	numVertices  = 0;
-	type		 = GL_TRIANGLES;
+	numVertices = 0;
+	type = GL_TRIANGLES;
 
-	numIndices		= 0;
-	vertices		= nullptr;
-	textureCoords	= nullptr;
-	normals			= nullptr;
-	tangents		= nullptr;
-	indices			= nullptr;
-	colours			= nullptr;
-	weights			= nullptr;
-	weightIndices	= nullptr;
+	numIndices = 0;
+	vertices = nullptr;
+	textureCoords = nullptr;
+	normals = nullptr;
+	tangents = nullptr;
+	indices = nullptr;
+	colours = nullptr;
+	weights = nullptr;
+	weightIndices = nullptr;
 }
 
-Mesh::~Mesh(void)	{
+Mesh::~Mesh(void) {
 	glDeleteVertexArrays(1, &arrayObject);			//Delete our VAO
 	glDeleteBuffers(MAX_BUFFER, bufferObject);		//Delete our VBOs
 
@@ -38,15 +38,15 @@ Mesh::~Mesh(void)	{
 	delete[]	weightIndices;
 }
 
-void Mesh::Draw()	{
+void Mesh::Draw() {
 	glBindVertexArray(arrayObject);
-	if(bufferObject[INDEX_BUFFER]) {
+	if (bufferObject[INDEX_BUFFER]) {
 		glDrawElements(type, numIndices, GL_UNSIGNED_INT, 0);
 	}
-	else{
+	else {
 		glDrawArrays(type, 0, numVertices);
 	}
-	glBindVertexArray(0);	
+	glBindVertexArray(0);
 }
 
 void Mesh::DrawSubMesh(int i) {
@@ -57,7 +57,7 @@ void Mesh::DrawSubMesh(int i) {
 
 	glBindVertexArray(arrayObject);
 	if (bufferObject[INDEX_BUFFER]) {
-		const GLvoid* offset = (const GLvoid * )(m.start * sizeof(unsigned int)); 
+		const GLvoid* offset = (const GLvoid*)(m.start * sizeof(unsigned int));
 		glDrawElements(type, m.count, GL_UNSIGNED_INT, offset);
 	}
 	else {
@@ -66,7 +66,7 @@ void Mesh::DrawSubMesh(int i) {
 	glBindVertexArray(0);
 }
 
-void UploadAttribute(GLuint* id, int numElements, int dataSize, int attribSize, int attribID, void* pointer, const string&debugName) {
+void UploadAttribute(GLuint* id, int numElements, int dataSize, int attribSize, int attribID, void* pointer, const string& debugName) {
 	glGenBuffers(1, id);
 	glBindBuffer(GL_ARRAY_BUFFER, *id);
 	glBufferData(GL_ARRAY_BUFFER, numElements * dataSize, pointer, GL_STATIC_DRAW);
@@ -77,13 +77,13 @@ void UploadAttribute(GLuint* id, int numElements, int dataSize, int attribSize, 
 	glObjectLabel(GL_BUFFER, *id, -1, debugName.c_str());
 }
 
-void	Mesh::BufferData()	{
+void	Mesh::BufferData() {
 	glBindVertexArray(arrayObject);
 
 	////Buffer vertex data
 	UploadAttribute(&bufferObject[VERTEX_BUFFER], numVertices, sizeof(Vector3), 3, VERTEX_BUFFER, vertices, "Positions");
 
-	if(textureCoords) {	//Buffer texture data
+	if (textureCoords) {	//Buffer texture data
 		UploadAttribute(&bufferObject[TEXTURE_BUFFER], numVertices, sizeof(Vector2), 2, TEXTURE_BUFFER, textureCoords, "TexCoords");
 	}
 
@@ -115,42 +115,42 @@ void	Mesh::BufferData()	{
 	}
 
 	//buffer index data
-	if(indices) {
+	if (indices) {
 		glGenBuffers(1, &bufferObject[INDEX_BUFFER]);
 		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, bufferObject[INDEX_BUFFER]);
-		glBufferData(GL_ELEMENT_ARRAY_BUFFER, numIndices*sizeof(GLuint), indices, GL_STATIC_DRAW);
+		glBufferData(GL_ELEMENT_ARRAY_BUFFER, numIndices * sizeof(GLuint), indices, GL_STATIC_DRAW);
 
 		glObjectLabel(GL_BUFFER, bufferObject[INDEX_BUFFER], -1, "Indices");
 	}
-	glBindVertexArray(0);	
+	glBindVertexArray(0);
 	glBindBuffer(GL_ARRAY_BUFFER, 0);
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
 }
 
 
 /*
-* 
+*
 * Extra file loading stuff!
-* 
+*
 * */
 
 enum class GeometryChunkTypes {
-	VPositions		= 1,
-	VNormals		= 2,
-	VTangents		= 4,
-	VColors			= 8,
-	VTex0			= 16,
-	VTex1			= 32,
-	VWeightValues	= 64,
-	VWeightIndices	= 128,
-	Indices			= 256,
-	JointNames		= 512,
-	JointParents	= 1024,
-	BindPose		= 2048,
-	BindPoseInv		= 4096,
-	Material		= 65536,
-	SubMeshes		= 1 << 14,
-	SubMeshNames	= 1 << 15
+	VPositions = 1,
+	VNormals = 2,
+	VTangents = 4,
+	VColors = 8,
+	VTex0 = 16,
+	VTex1 = 32,
+	VWeightValues = 64,
+	VWeightIndices = 128,
+	Indices = 256,
+	JointNames = 512,
+	JointParents = 1024,
+	BindPose = 2048,
+	BindPoseInv = 4096,
+	Material = 65536,
+	SubMeshes = 1 << 14,
+	SubMeshNames = 1 << 15
 };
 
 void ReadTextFloats(std::ifstream& file, vector<Vector2>& element, int numVertices) {
@@ -241,7 +241,7 @@ void ReadRigPose(std::ifstream& file, Matrix4** into) {
 	}
 }
 
-void ReadSubMeshes(std::ifstream& file, int count, vector<Mesh::SubMesh> & subMeshes) {
+void ReadSubMeshes(std::ifstream& file, int count, vector<Mesh::SubMesh>& subMeshes) {
 	for (int i = 0; i < count; ++i) {
 		Mesh::SubMesh m;
 		file >> m.start;
@@ -283,10 +283,10 @@ Mesh* Mesh::LoadFromMeshFile(const string& name) {
 		return nullptr;
 	}
 
-	int numMeshes	= 0; //read
+	int numMeshes = 0; //read
 	int numVertices = 0; //read
-	int numIndices	= 0; //read
-	int numChunks	= 0; //read
+	int numIndices = 0; //read
+	int numChunks = 0; //read
 
 	file >> numMeshes;
 	file >> numVertices;
@@ -328,8 +328,8 @@ Mesh* Mesh::LoadFromMeshFile(const string& name) {
 	}
 	//Now that the data has been read, we can shove it into the actual Mesh object
 
-	mesh->numVertices	= numVertices;
-	mesh->numIndices	= numIndices;
+	mesh->numVertices = numVertices;
+	mesh->numIndices = numIndices;
 
 	if (!readPositions.empty()) {
 		mesh->vertices = new Vector3[numVertices];
@@ -420,8 +420,13 @@ Mesh* Mesh::GenerateQuad() {
 	m->textureCoords[2] = Vector2(1.0f, 1.0f);
 	m->textureCoords[3] = Vector2(1.0f, 0.0f);
 
+	m->normals = new Vector3[m->numVertices]; //init new var tutorial 13
+	m->tangents = new Vector4[m->numVertices]; //init new var tutorial 13
+
 	for (int i = 0; i < 4; ++i) {
 		m->colours[i] = Vector4(1.0f, 1.0f, 1.0f, 1.0f);
+		m->normals[i] = Vector3(0.0f, 0.0f, -1.0f); //new tutorial 13
+		m->tangents[i] = Vector4(1.0f, 0.0f, 0.0f, 1.0f); //new tutorial 13
 	}
 
 	m->BufferData();
