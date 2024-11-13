@@ -153,3 +153,53 @@ void Renderer::DrawWater() {
 	quad->Draw();
 }
 
+void Renderer::BuildNodeLists(SceneNode* from) {
+	if (frameFrustum.insideFrustum(*from)) {
+		Vector3 dir = from->getWorldTransform().GetPositionVector() - camera->GetPosition();
+		from->setCameraDistance(Vector3::Dot(dir, dir));
+
+		if (from->getColour().w < 1.0f) {
+			transparentNodeList.push_back(from);
+		}
+		else {
+			nodeList.push_back(from);
+		}
+	}
+
+	for (vector<SceneNode*>::const_iterator i = from->GetChildIteratorStart(); i != from->GetChildIteratorEnd(); ++i) {
+		BuildNodeLists((*i));
+	}
+}
+
+void Renderer::SortNodeLists() {
+	std::sort(transparentNodeList.rbegin(), transparentNodeList.rend(), SceneNode::compareByCameraDistance); //Note the r
+	std::sort(nodeList.begin(), nodeList.end(), SceneNode::compareByCameraDistance);
+}
+
+void Renderer::DrawNodes() {
+	for (const auto& i : nodeList) {
+		DrawNode(i);
+	}
+	for (const auto& i : transparentNodeList) {
+		DrawNode(i);
+	}
+}
+
+void Renderer::DrawNode(SceneNode* n) {
+	if (n->getMesh()) {
+		Matrix4 model = n->getWorldTransform() * Matrix4::Scale(n->getModelScale());
+
+		glUniformMatrix4fv(glGetUniformLocation(shader->GetProgram(), "modelMatrix"), 1, false, model.values);
+
+		glUniform4fv(glGetUniformLocation(shader->GetProgram(), "nodeColour"), 1, (float*)&n->getColour());
+
+		texture = n->getTexture();
+		glActiveTexture(GL_TEXTURE0);
+		glBindTexture(GL_TEXTURE_2D, texture);
+
+		glUniform1i(glGetUniformLocation(shader->GetProgram(), "useTexture"), texture);
+
+		n->Draw(*this);
+	}
+}
+

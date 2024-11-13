@@ -42,7 +42,8 @@ protected:
 	Frustum frameFrustum;
 	vector<SceneNode*> transparentNodeList;
 	vector<SceneNode*> nodeList;
-
+	Shader* shader;
+	GLuint texture;
 
 	GLuint cubeMap;
 	GLuint waterTex;
