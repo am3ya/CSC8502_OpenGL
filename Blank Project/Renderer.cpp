@@ -5,6 +5,8 @@
 #include "../nclgl/Shader.h"
 #include "../nclgl/Camera.h"
 #include "../nclgl/SceneNode.h"
+#include "../nclgl/MeshAnimation.h"
+#include "../nclgl/MeshMaterial.h"
 #include <algorithm>
 const int POST_PASSES = 10;
 
@@ -36,16 +38,26 @@ Renderer::Renderer(Window& parent) : OGLRenderer(parent) {
 	skyboxShader = new Shader("skyboxVertex.glsl", "skyboxFragment.glsl");
 	lightShader = new Shader("PerPixelVertex.glsl", "PerPixelFragment.glsl");
 
-	if (!reflectShader->LoadSuccess() || !skyboxShader->LoadSuccess() || !lightShader->LoadSuccess()) {
+	sceneShader = new Shader("TexturedVertex.glsl", "TexturedFragment.glsl");
+	processShader = new Shader("TexturedVertex.glsl", "processFrag.glsl");
+
+	if (!reflectShader->LoadSuccess() || !skyboxShader->LoadSuccess() || !lightShader->LoadSuccess()
+		|| !sceneShader->LoadSuccess() || !processShader->LoadSuccess()) {
 		return;
 	}
+
+	treeMesh = Mesh::LoadFromMeshFile("tree-maple-low-poly-Anim.msh");
+	treeAnim = new MeshAnimation("tree-maple-low-poly-Anim.anm");
+	treeMaterial = new MeshMaterial("tree-maple-low-poly-Anim.mat");
 
 	Vector3 heightMapSize = heightMap->GetHeightMapSize();
 
 	camera = new Camera(-45.0f, 0.0f, heightMapSize * Vector3(0.5f, 5.0f, 0.5f));
-	light = new Light(heightMapSize * Vector3(0.5f, 1.5f, 0.5f), Vector4(1, 1, 1, 1), heightMapSize.x * 2.5);
+	light = new Light(heightMapSize * Vector3(0.3f, 1.5f, 0.5f), Vector4(1, 1, 1, 1), heightMapSize.x * 2.5);
 
 	projMatrix = Matrix4::Perspective(1.0f, 15000.0f, (float)width / (float)height, 45.0f);
+
+	root = new SceneNode();
 
 	glEnable(GL_DEPTH_TEST);
 	glEnable(GL_BLEND);
