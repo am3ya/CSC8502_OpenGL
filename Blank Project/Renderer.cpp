@@ -7,6 +7,10 @@
 #include "../nclgl/SceneNode.h"
 #include "../nclgl/MeshAnimation.h"
 #include "../nclgl/MeshMaterial.h"
+#include "ShadedSceneNode.h"
+#include "Tree.h"
+#include "Water.h"
+//#include "HeightMap.h"
 #include <algorithm>
 const int POST_PASSES = 10;
 
@@ -16,44 +20,66 @@ Renderer::Renderer(Window& parent) : OGLRenderer(parent) {
 
 	waterTex = SOIL_load_OGL_texture(TEXTUREDIR"water.TGA", SOIL_LOAD_AUTO, SOIL_CREATE_NEW_ID, SOIL_FLAG_MIPMAPS);
 
-	//waterBump = SOIL_load_OGL_texture(TEXTUREDIR"waterbump.PNG", SOIL_LOAD_AUTO, SOIL_CREATE_NEW_ID, SOIL_FLAG_MIPMAPS);
+	//waterBump = SOIL_load_OGL_texture(TEXTU REDIR"waterbump.PNG", SOIL_LOAD_AUTO, SOIL_CREATE_NEW_ID, SOIL_FLAG_MIPMAPS);
 
 	earthTex = SOIL_load_OGL_texture(TEXTUREDIR"grass.JPG", SOIL_LOAD_AUTO, SOIL_CREATE_NEW_ID, SOIL_FLAG_MIPMAPS);
 
 	earthBump = SOIL_load_OGL_texture(TEXTUREDIR"grassBump.JPG", SOIL_LOAD_AUTO, SOIL_CREATE_NEW_ID, SOIL_FLAG_MIPMAPS);
 
+	apocalypseTex = SOIL_load_OGL_texture(TEXTUREDIR"rock.jpg", SOIL_LOAD_AUTO, SOIL_CREATE_NEW_ID, SOIL_FLAG_MIPMAPS);
+
+	apocalypseBump = SOIL_load_OGL_texture(TEXTUREDIR"rockBump.jpg", SOIL_LOAD_AUTO, SOIL_CREATE_NEW_ID, SOIL_FLAG_MIPMAPS);
+
 	cubeMap = SOIL_load_OGL_cubemap(TEXTUREDIR"rusted_west.jpg", TEXTUREDIR"rusted_east.jpg",
 		TEXTUREDIR"rusted_up.jpg", TEXTUREDIR"rusted_down.jpg",
 		TEXTUREDIR"rusted_south.jpg", TEXTUREDIR"rusted_north.jpg", SOIL_LOAD_RGB, SOIL_CREATE_NEW_ID, 0);
 
-	if (!earthTex || !earthBump || !cubeMap || !waterTex /* || !waterBump*/) {
+	apocalypseCubeMap = SOIL_load_OGL_cubemap(TEXTUREDIR"hellLeft.jpg", TEXTUREDIR"hellRight.jpg",
+		TEXTUREDIR"hellTop.jpg", TEXTUREDIR"hellBottom.jpg",
+		TEXTUREDIR"hellFront.jpg", TEXTUREDIR"hellBack.jpg", SOIL_LOAD_RGB, SOIL_CREATE_NEW_ID, 0);
+
+	if (!earthTex || !earthBump || !cubeMap || !waterTex /* || !waterBump*/ || !apocalypseTex || !apocalypseBump || !apocalypseCubeMap) {
 		return;
 	}
 	setTextureRepeating(earthTex, true);
 	setTextureRepeating(earthBump, true);
 	setTextureRepeating(waterTex, true);
+	setTextureRepeating(apocalypseTex, true);
+	setTextureRepeating(apocalypseBump, true);
 	//setTextureRepeating(waterBump, true);
 
 	reflectShader = new Shader("reflectVertex.glsl", "reflectFragment.glsl");
 	skyboxShader = new Shader("skyboxVertex.glsl", "skyboxFragment.glsl");
 	lightShader = new Shader("PerPixelVertex.glsl", "PerPixelFragment.glsl");
-
 	sceneShader = new Shader("TexturedVertex.glsl", "TexturedFragment.glsl");
 	processShader = new Shader("TexturedVertex.glsl", "processFrag.glsl");
+	treeShader = new Shader("SkinningVertex.glsl", "texturedFragment.glsl");
 
 	if (!reflectShader->LoadSuccess() || !skyboxShader->LoadSuccess() || !lightShader->LoadSuccess()
-		|| !sceneShader->LoadSuccess() || !processShader->LoadSuccess()) {
+		|| !sceneShader->LoadSuccess() || !processShader->LoadSuccess() || !treeShader->LoadSuccess()) {
 		return;
 	}
 
-	treeMesh = Mesh::LoadFromMeshFile("tree-maple-low-poly-Anim.msh");
+	tree1 = Mesh::LoadFromMeshFile("tree-maple-low-poly-Anim.msh");
 	treeAnim = new MeshAnimation("tree-maple-low-poly-Anim.anm");
 	treeMaterial = new MeshMaterial("tree-maple-low-poly-Anim.mat");
 
+	/*for (int i = 0; i < tree1->GetSubMeshCount(); ++i) {
+		const MeshMaterialEntry* matEntry = treeMaterial->GetMaterialForLayer(i);
+
+		const string* filename = nullptr;
+		matEntry->GetEntry("Diffuse", &filename);
+		string path = TEXTUREDIR + *filename;
+		GLuint texID = SOIL_load_OGL_texture(path.c_str(), SOIL_LOAD_AUTO, SOIL_CREATE_NEW_ID, SOIL_FLAG_MIPMAPS | SOIL_FLAG_INVERT_Y);
+		treeTextures.emplace_back(texID);
+	}*/
+
 	Vector3 heightMapSize = heightMap->GetHeightMapSize();
 
-	camera = new Camera(-45.0f, 0.0f, heightMapSize * Vector3(0.5f, 5.0f, 0.5f));
-	light = new Light(heightMapSize * Vector3(0.3f, 1.5f, 0.5f), Vector4(1, 1, 1, 1), heightMapSize.x * 2.5);
+	camera = new Camera(-45.0f, 0.0f, heightMapSize * Vector3(1.0f, 2.0f, 1.0f));
+	light = new Light(heightMapSize * Vector3(0.3f, 1.5f, 0.5f), Vector4(1, 1, 1, 1), heightMapSize.x * 3.0);
+	//light2 = new Light(heightMapSize * Vector3(0.7f, 1.5f, 0.5f), Vector4(1, 1, 1, 1), heightMapSize.x * 3.0);
+	//tree1 = new Tree(lightShader, treeMesh, treeAnim, treeMaterial, Vector3(2800.0f, 350.0f, 2800.0f), 75.0f, 30.0f, false);
 
 	projMatrix = Matrix4::Perspective(1.0f, 15000.0f, (float)width / (float)height, 45.0f);
 
@@ -76,6 +102,9 @@ Renderer::~Renderer(void) {
 	delete skyboxShader;
 	delete lightShader;
 	delete light;
+	delete treeAnim;
+	delete treeMaterial;
+	delete treeShader;
 }
 
 void Renderer::UpdateScene(float dt) {
@@ -83,6 +112,7 @@ void Renderer::UpdateScene(float dt) {
 	viewMatrix = camera->buildViewMatrix();
 	waterRotate += dt * 2.0f; //2 degrees a second
 	waterCycle += dt * 0.5f; //10 units a second
+
 }
 
 void Renderer::RenderScene() {
@@ -90,6 +120,7 @@ void Renderer::RenderScene() {
 	DrawSkybox();
 	DrawHeightMap();
 	DrawWater();
+	//DrawTree();
 }
 
 void Renderer::DrawSkybox() {
@@ -143,6 +174,7 @@ void Renderer::DrawWater() {
 
 	glActiveTexture(GL_TEXTURE2);
 	glBindTexture(GL_TEXTURE_CUBE_MAP, cubeMap);
+	//glBindTexture(GL_TEXTURE_CUBE_MAP, apocalypseCubeMap);
 
 	Vector3 hSize = heightMap->GetHeightMapSize();
 
@@ -202,4 +234,3 @@ void Renderer::DrawNode(SceneNode* n) {
 		n->Draw(*this);
 	}
 }
-

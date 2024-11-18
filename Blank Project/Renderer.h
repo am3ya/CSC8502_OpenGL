@@ -10,6 +10,7 @@ class HeightMap;
 class MeshMaterial;
 class SceneNode;
 class MeshAnimation;
+class Tree;
 
 class Renderer : public OGLRenderer {
 public:
@@ -22,6 +23,7 @@ protected:
 	void DrawHeightMap();
 	void DrawWater();
 	void DrawSkybox();
+	void DrawTree();
 
 	Shader* lightShader;
 	Shader* reflectShader;
@@ -31,7 +33,9 @@ protected:
 	Mesh* quad;
 
 	Light* light;
+	Light* light2;
 	Camera* camera;
+	Mesh* tree1;
 
 	void BuildNodeLists(SceneNode* from);
 	void SortNodeLists();
@@ -46,16 +50,19 @@ protected:
 	GLuint texture;
 
 	GLuint cubeMap;
+	GLuint apocalypseCubeMap;
 	GLuint waterTex;
 	GLuint earthTex;
 	GLuint earthBump;
+	GLuint apocalypseTex;
+	GLuint apocalypseBump;
 	//GLuint waterBump;
 
 	float waterRotate;
 	float waterCycle;
 
 	Mesh* treeMesh;
-	Shader* meshShader;
+	Shader* treeShader;
 	Shader* animMeshShader;
 	MeshAnimation* treeAnim;
 	MeshMaterial* treeMaterial;
@@ -70,4 +77,6 @@ protected:
 	GLuint bufferDepthTex;
 
 	bool postProcess;
+	int currentFrame;
+	float frameTime;
 };
