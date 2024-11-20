@@ -10,6 +10,7 @@ class HeightMap;
 class MeshMaterial;
 class SceneNode;
 class MeshAnimation;
+class Tree;
 
 class Renderer : public OGLRenderer {
 public:
@@ -22,20 +23,28 @@ protected:
 	void DrawHeightMap();
 	void DrawWater();
 	void DrawSkybox();
+	void DrawTree();
 
 	Shader* lightShader;
 	Shader* reflectShader;
 	Shader* skyboxShader;
+	Shader* fadeShader;
 
 	HeightMap* heightMap;
 	Mesh* quad;
 
 	Light* light;
+	Light* light2;
 	Camera* camera;
+	Mesh* tree1;
+	Mesh* soldierMesh;
+	MeshAnimation* soldierAnim;
+	MeshMaterial* soldierMeshMat;
 
 	void BuildNodeLists(SceneNode* from);
 	void SortNodeLists();
 	void ClearNodeLists();
+	void ApplyFadeEffect(float fadeFactor);
 	void DrawNodes();
 	void DrawNode(SceneNode* n);
 	SceneNode* root;
@@ -46,16 +55,20 @@ protected:
 	GLuint texture;
 
 	GLuint cubeMap;
+	GLuint apocalypseCubeMap;
 	GLuint waterTex;
+	GLuint treeTex;
 	GLuint earthTex;
 	GLuint earthBump;
+	GLuint apocalypseTex;
+	GLuint apocalypseBump;
 	//GLuint waterBump;
 
 	float waterRotate;
 	float waterCycle;
 
 	Mesh* treeMesh;
-	Shader* meshShader;
+	Shader* treeShader;
 	Shader* animMeshShader;
 	MeshAnimation* treeAnim;
 	MeshMaterial* treeMaterial;
@@ -70,4 +83,9 @@ protected:
 	GLuint bufferDepthTex;
 
 	bool postProcess;
+	int currentFrame;
+	float frameTime;
+	float elapsedTime;
+	bool fadingOut;
+	float fadeFactor;
 };
