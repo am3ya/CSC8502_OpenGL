@@ -49,6 +49,11 @@ public:
 		return children.end();
 	}
 
+	//Added myself
+	Shader* getShader() {
+		return shader;
+	}
+
 protected:
 	SceneNode* parent;
 	Mesh* mesh;
@@ -59,5 +64,7 @@ protected:
 	float distanceFromCamera;
 	float boundingRadius;
 	GLuint texture;
+	//Addded myself
+	Shader* shader;
 	std::vector<SceneNode*> children;
 };

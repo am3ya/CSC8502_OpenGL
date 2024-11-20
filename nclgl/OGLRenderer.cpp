@@ -276,4 +276,3 @@ void OGLRenderer::DebugCallback(GLenum source, GLenum type, GLuint id, GLenum se
 #endif
 
 
-
