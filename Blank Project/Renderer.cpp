@@ -215,9 +215,8 @@ void Renderer::RenderScene() {
 	projMatrix = Matrix4::Perspective(1.0f, 15000.0f, (float)miniWidth / (float)miniHeight, 45.0f);
 	DrawScene();
 	
-	
-	
-	
+	//viewMatrix = camera->buildViewMatrix();
+	//projMatrix = Matrix4::Perspective(1.0f, 15000.0f, (float)width / (float)height, 45.0f);
 	
 	
 	
@@ -248,6 +247,7 @@ void Renderer::DrawScene() {
 	DrawHeightMap();
 	DrawWater();
 	DrawTree();
+	DrawSoldier();
 
 	if (fadeFactor > 0.0f) {
 		ApplyFadeEffect(fadeFactor);
@@ -494,9 +494,43 @@ void Renderer::OrbitCamera(float dt) {
 
 void Renderer::DrawSoldier() {
 	BindShader(treeShader);
+	glUniform1i(glGetUniformLocation(treeShader->GetProgram(), "diffuseTex"), 0);
 
 	Vector3 heightMapSize = heightMap->GetHeightMapSize();
 
+	Vector3 soldierPos = heightMapSize * Vector3(0.7f, 1.2f, 0.5f);
+	soldierPos.y += 2000.0f;
 
+	Matrix4 modelMatrix = Matrix4::Translation(soldierPos) *
+		Matrix4::Rotation(-90.0f, Vector3(0, 1, 1))*
+		Matrix4::Scale(Vector3(10.5f, 10.5f, 10.5f));
+	glUniformMatrix4fv(glGetUniformLocation(treeShader->GetProgram(), "modelMatrix"), 1, false, modelMatrix.values);
+	// Pass the view and projection matrices
+	glUniformMatrix4fv(glGetUniformLocation(treeShader->GetProgram(), "viewMatrix"), 1, false, viewMatrix.values);
+	glUniformMatrix4fv(glGetUniformLocation(treeShader->GetProgram(), "projMatrix"), 1, false, projMatrix.values);
 
+	UpdateShaderMatrices();
+
+	vector<Matrix4> frameMatrices;
+
+	const Matrix4* invBindPose = soldierMesh->GetInverseBindPose();
+	const Matrix4* frameData = soldierAnim->GetJointData(currentFrame);
+	Matrix4 rotationFix = Matrix4::Rotation(-90.0f, Vector3(1.0f, 0.0f, 0.0f)) * Matrix4::Rotation(180.0f, Vector3(0.0f, 1.0f, 0.0f)); // Rotate by 90 degrees around X-axis
+	Matrix4 scalingFix = Matrix4::Scale(Vector3(0.05f, 0.05f, 1.0f));
+
+	for (unsigned int i = 0; i < soldierMesh->GetJointCount(); ++i) {
+		//frameMatrices.emplace_back(/*frameData[i] **/ invBindPose[i]);
+		frameMatrices.emplace_back(scalingFix * rotationFix * frameData[i] * invBindPose[i]);
+	}
+
+	int j = glGetUniformLocation(treeShader->GetProgram(), "joints");
+	glUniformMatrix4fv(j, frameMatrices.size(), false, (float*)frameMatrices.data());
+
+	for (int i = 0; i < soldierMesh->GetSubMeshCount(); ++i) {
+		glActiveTexture(GL_TEXTURE0);
+		glBindTexture(GL_TEXTURE_2D, soldierTextures[i]);
+		//glUniform1i(glGetUniformLocation(treeShader->GetProgram(), "diffuseTex"), 0);
+		soldierMesh->DrawSubMesh(i);
+	}
 }
+
