@@ -15,7 +15,7 @@ out Vertex {
    vec2 texCoord;
 } OUT;
 
-void main(void){
+void main(void){ 
    vec4 localPos = vec4(position, 1.0f);
    vec4 skelPos = vec4(0,0,0,0);
 
