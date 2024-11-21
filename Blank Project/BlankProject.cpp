@@ -1,6 +1,7 @@
 #include "../NCLGL/window.h"
 #include "Renderer.h"
-
+#include <string>
+#include <iostream>
 int main() {
 	Window w("Coursework", 1280, 720, false); //This is all boring win32 window creation stuff!
 	if (!w.HasInitialised()) {
@@ -22,6 +23,9 @@ int main() {
 		if (Window::GetKeyboard()->KeyDown(KEYBOARD_F5)) {
 			Shader::ReloadAllShaders();
 		}
+
+		std::string fps = std::to_string(1.0 / w.GetTimer()->GetTimeDeltaSeconds());
+		w.SetTitle(fps);
 	}
 
 	return 0;

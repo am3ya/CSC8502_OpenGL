@@ -24,6 +24,14 @@ protected:
 	void DrawWater();
 	void DrawSkybox();
 	void DrawTree();
+	void DrawSoldier();
+	void SetShaderLighting(const Light& light1, const Light& light2);
+	void OrbitCamera(float dt);
+	void HandleInput();
+	void DrawScene();
+	void ApplyFadeEffect(float fadeFactor);
+	void DrawPostProcess();
+	void PresentScene();
 
 	Shader* lightShader;
 	Shader* reflectShader;
@@ -32,21 +40,18 @@ protected:
 
 	HeightMap* heightMap;
 	Mesh* quad;
+	Mesh* postquad;
 
 	Light* light;
 	Light* light2;
 	Camera* camera;
+	Camera* camera2;
 	Mesh* tree1;
 	Mesh* soldierMesh;
 	MeshAnimation* soldierAnim;
 	MeshMaterial* soldierMeshMat;
-
-	void BuildNodeLists(SceneNode* from);
-	void SortNodeLists();
-	void ClearNodeLists();
-	void ApplyFadeEffect(float fadeFactor);
-	void DrawNodes();
-	void DrawNode(SceneNode* n);
+	vector<GLuint> soldierTextures;
+	
 	SceneNode* root;
 	Frustum frameFrustum;
 	vector<SceneNode*> transparentNodeList;
@@ -74,7 +79,6 @@ protected:
 	MeshMaterial* treeMaterial;
 	vector<GLuint> treeTextures;
 
-	void DrawPostProcess();
 	Shader* processShader;
 	Shader* sceneShader;
 	GLuint bufferFBO;
@@ -88,4 +92,7 @@ protected:
 	float elapsedTime;
 	bool fadingOut;
 	float fadeFactor;
+	bool fadeChange;
+	bool useApocalypseSkyBox;
+	bool cameraOrbit;
 };
